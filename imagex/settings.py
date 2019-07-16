@@ -119,6 +119,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# 创建图片存放路径
+CHECK_IMG_PATH = os.path.join(BASE_DIR, 'check-img')
+if not os.path.isdir(CHECK_IMG_PATH):
+    os.mkdir(CHECK_IMG_PATH)
+
 # 创建日志的路径
 LOG_PATH = os.path.join(BASE_DIR, 'log')
 # 如果地址不存在，则会自动创建log文件夹
