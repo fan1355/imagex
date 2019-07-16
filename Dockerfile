@@ -1,8 +1,10 @@
 FROM daocloud.io/python
 
-WORKDIR /imagex
-COPY . /imagex
+WORKDIR /app
+COPY . /app
 
+COPY pip.conf /root/.pip/pip.conf
+run pip install --upgrade pip
 RUN pip install -r requirements.txt
 EXPOSE 8000
 
