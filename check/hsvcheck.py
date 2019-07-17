@@ -3,6 +3,7 @@ import numpy as np
 import logging
 
 from . import util as show
+from . import colors
 
 logger = logging.getLogger('cmd')
 
@@ -33,19 +34,20 @@ def find_area(img, range_list):
     area_measure = areaCal(contours)
     return mask, area_measure
 
-def docheck(img_path, color_range, std_area_measure):
+def docheck(img_path, color, std_area_measure):
     """
     返回值：1-通过；0-不通过；-1 图像不够清晰
     """
+    color_range = colors.get_color_list(color)
     img = cv2.imread(img_path)
     mask, area_measure = find_area(img, color_range)
-    logger.info("%s real:[%s] std:[%s]" % (img_path, area_measure, std_area_measure))
+    
+    logger.info("%s color:[%s] real:[%s] std:[%s]" % (img_path, color, area_measure, std_area_measure))
 
     confidence = area_measure / std_area_measure
-
     if confidence > 0.5:
         return 1
-    elif confidence > 0:
+    elif confidence > 0.2:
         return -1
     else:
         return 0
