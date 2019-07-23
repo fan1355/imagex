@@ -84,10 +84,12 @@ def color_dectect(img, color_range, x_scale, y_scale, std_rect, draw_img):
 def docheck(img_path, color_list, std_rect_list, scale_list):
     """
     同时检测 颜色和位置 是否正确
+    ！！！--- 该方法会修改原图 ---！！！
+    
     scale_list = [ {x: 100, y: 100} ] 横向精度/纵向精度
     std_rect_list = [{x:1, y:1, w:10, h:10}] 色块标准位置，左上顶点坐标及矩形长/宽
 
-    @return 各个颜色单独分析是否通过
+    @return 各色块分析结果，标注后的图片
     """
     frame = cv2.imread(img_path)
     draw_img = frame.copy()

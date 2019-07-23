@@ -3,6 +3,7 @@ from django.http import HttpResponse
 import  numpy as np
 import logging
 import json
+import base64
 
 from check import movecheck
 from check import hsvcheck
@@ -39,11 +40,14 @@ def position_check(request):
     std_rect_list = json.loads(std_rect_str)
     if file_path and list_size > 0 and len(scale_list) == list_size:
         # 根据检测结果，将图像合并
-        rslt, draw_img = movecheck.docheck(file_path, color_list, std_rect_list, scale_list)
+        rslt, _ = movecheck.docheck(file_path, color_list, std_rect_list, scale_list)
         # return HttpResponse("%s" % rslt)
         with open(file_path, 'rb') as f:
-            image_data = f.read()
-        return HttpResponse(draw_img, content_type="image/jpeg")
+            image_str = str(base64.b64encode(f.read()))
+        resp = dict()
+        resp["info"] = rslt
+        resp["img"] = image_str
+        return HttpResponse(json.dumps(resp,ensure_ascii=False),content_type="application/json,charset=utf-8")
                 
     return HttpResponse("ERR.")
 
