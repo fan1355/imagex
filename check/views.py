@@ -11,6 +11,35 @@ from check import util_file
 
 logger = logging.getLogger('cmd') # 这里用__name__通用,自动检测.
 
+def get_info(request):
+    """
+    检测标准图的色块位置信息
+    """
+    if request.method=='POST':
+        param = request.POST
+    elif request.method=='GET':
+        param = request.GET
+    else:
+        param = {}
+
+    color_dict = json.loads(param.get('colors',r"{}"))
+    logger.info("%s" % (color_dict))
+    # 处理图片
+    file_source = request.FILES.get("picture")
+    file_source.name = util_file.get_file_name(file_source.name)
+    file_path = "check-img/"+file_source.name
+    img_file = open(file_path, 'wb+')
+    for chunk in file_source.chunks():  
+        img_file.write(chunk)  
+    img_file.close()
+    # 分析图片信息
+    list_size = len(color_dict.keys())
+    if file_path and list_size > 0:
+        info = movecheck.get_info(file_path, color_dict)
+        return HttpResponse(json.dumps(info),content_type="application/json")
+    else:
+        return HttpResponse("ERR.")
+
 def position_check(request):
     """
     同时检测 颜色和位置，只有都符合才通过
@@ -22,10 +51,11 @@ def position_check(request):
     else:
         param = {}
     # logger.info("%s -- %s -- %s" % (request.method, str(request.GET), param ) )
-    color_list = param.get('colors','').split(",")
-    scale_str = param.get('scale_str','[]')
-    std_rect_str = param.get('std_rect_str','[]')
-    logger.info("%s -- %s -- %s" % (color_list, scale_str, std_rect_str))
+    color_dict = json.loads(param.get('colors',r"{}"))
+    # color_list = param.get('colors','').split(",")
+    # scale_str = param.get('scale_str','[]')
+    # std_rect_str = param.get('std_rect_str','[]')
+    logger.info("colors: %s" % (color_dict))
     # 处理图片
     file_source = request.FILES.get("picture")
     file_source.name = util_file.get_file_name(file_source.name)
@@ -35,19 +65,17 @@ def position_check(request):
         img_file.write(chunk)  
     img_file.close()  
 
-    list_size = len(color_list)
-    scale_list = json.loads(scale_str)
-    std_rect_list = json.loads(std_rect_str)
-    if file_path and list_size > 0 and len(scale_list) == list_size:
+    list_size = len(color_dict.keys())
+    if file_path and list_size > 0:
         # 根据检测结果，将图像合并
-        rslt, _ = movecheck.docheck(file_path, color_list, std_rect_list, scale_list)
+        rslt, _ = movecheck.docheck(file_path, color_dict)
         # return HttpResponse("%s" % rslt)
         with open(file_path, 'rb') as f:
             image_str = str(base64.b64encode(f.read()))
         resp = dict()
         resp["info"] = rslt
         resp["img"] = image_str
-        return HttpResponse(json.dumps(resp,ensure_ascii=False),content_type="application/json,charset=utf-8")
+        return HttpResponse(json.dumps(resp),content_type="application/json")
                 
     return HttpResponse("ERR.")
 

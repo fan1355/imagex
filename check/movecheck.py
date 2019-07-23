@@ -67,7 +67,7 @@ def color_dectect(img, color_range, x_scale, y_scale, std_rect, draw_img):
         draw_img = cv2.putText(draw_img, 'X', (std_rect[0], std_rect[1]+std_rect[3]), font, 8, (0, 0, 255), 15)
         return False, draw_img
     
-        # 取最大色块轮廓，一般应该只有一个轮廓
+    # 取最大色块轮廓，一般应该只有一个轮廓
     max_countor = sorted(contours, key=cv2.contourArea, reverse=True)[0]
     x, y, w, h = cv2.boundingRect(max_countor)
     if check_offset(std_rect, (x, y, w, h), x_scale, y_scale):
@@ -81,7 +81,7 @@ def color_dectect(img, color_range, x_scale, y_scale, std_rect, draw_img):
         return False, draw_img
 
 
-def docheck(img_path, color_list, std_rect_list, scale_list):
+def docheck(img_path, color_dict):
     """
     同时检测 颜色和位置 是否正确
     ！！！--- 该方法会修改原图 ---！！！
@@ -96,21 +96,43 @@ def docheck(img_path, color_list, std_rect_list, scale_list):
 
     rslt_dict = dict()
 
-    size = len(color_list)
-    for i in range(size):
-        color_range = colors.get_color_list(color_list[i])
-        std_rect = [std_rect_list[i]["x"], std_rect_list[i]["y"], std_rect_list[i]["w"], std_rect_list[i]["h"]]
-        x_scale, y_scale = scale_list[i]["x"], scale_list[i]["y"]
+    for color,values in color_dict.items():
+        color_range = [(np.array(range[0]), np.array(range[1])) for range in values["ranges"]]
+        std_rect = [values["rect"]["x"], values["rect"]["y"], values["rect"]["w"], values["rect"]["h"]]
+        x_scale, y_scale = values["scale"]["x"], values["scale"]["y"]
         # 对单个颜色进行识别
         flag, draw_img = color_dectect(frame, color_range, x_scale, y_scale, std_rect, draw_img)
         if flag:
-            rslt_dict[color_list[i]] = 1
+            rslt_dict[color] = 1
         else:
-            rslt_dict[color_list[i]] = 0
+            rslt_dict[color] = 0
     logger.info("%s result: %s" % (img_path, rslt_dict))
     cv2.imwrite(img_path, draw_img)
 
     return rslt_dict, draw_img
+
+def get_info(img_path, color_dict):
+    """
+    收集图片色块位置信息
+    @return {"color":{x:1, y:1, w:10, h:10}}
+    """
+    info = dict()
+    frame = cv2.imread(img_path)
+    for color,range_list in color_dict.items():
+        color_range = [(np.array(range[0]), np.array(range[1])) for range in range_list]
+        logger.info("%s: %s" % (color, color_range))
+        # 轮廓识别
+        contours = get_contours(frame, color_range)
+        # 判断目标色块是否存在
+        if len(contours) < 1:
+            info[color] = None
+        # 取最大色块轮廓，一般应该只有一个轮廓
+        max_countor = sorted(contours, key=cv2.contourArea, reverse=True)[0]
+        x, y, w, h = cv2.boundingRect(max_countor)
+        info[color] = {"x": x, "y": y, "w": w, "h": h}
+
+    logger.info("%s info: %s" % (img_path, info))
+    return info
 
 
 
