@@ -14,7 +14,11 @@ def get_color_list(color):
         # 白色
         "white": [(np.array([0, 0, 221]), np.array([180, 30, 255]))],
         # 橙色
-        "orange": [(np.array([11, 43, 46]), np.array([25, 255, 255]))],
+        # "orange": [(np.array([11, 43, 46]), np.array([25, 255, 255]))],
+        "orange": [
+            (np.array([6, 123, 110]), np.array([43, 255, 170])),
+            (np.array([9, 111, 193]), np.array([180, 255, 255])),
+        ], # test
         # 黄色
         "yellow": [(np.array([26, 43, 46]), np.array([34, 255, 255]))],
         # 紫色

@@ -50,32 +50,70 @@ def draw_std_rect(img, std_rect):
     x, y, w, h = std_rect[0], std_rect[1], std_rect[2], std_rect[3]
     return cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 5)
 
-def docheck(img_path, color, x_scale, y_scale, std_rect):
+def color_dectect(img, color_range, x_scale, y_scale, std_rect, draw_img):
     """
-    同时检测 颜色和位置 是否正确
-    x_scale, y_scale 横向精度/纵向精度
-    std_rect = [x, y, w, h] 色块标准位置，左上顶点坐标及矩形长/宽
+    检测颜色区域，在图像中添加标注
+    img 原图
+    draw_img 需要添加标注的图，不能为空
     """
-    color_range = colors.get_color_list(color)
-    frame = cv2.imread(img_path)
+    frame = img.copy()  # 获取原图都备份，防止破坏原图
 
+    # 轮廓识别
     contours = get_contours(frame, color_range)
     # 判断目标色块是否存在
     if len(contours) < 1:
-        draw_img = draw_std_rect(frame.copy(), std_rect)
+        draw_img = draw_std_rect(draw_img, std_rect)
         font = cv2.FONT_HERSHEY_SIMPLEX
         draw_img = cv2.putText(draw_img, 'X', (std_rect[0], std_rect[1]+std_rect[3]), font, 8, (0, 0, 255), 15)
         return False, draw_img
-
-    # 取最大色块轮廓，一般应该只有一个轮廓
+    
+        # 取最大色块轮廓，一般应该只有一个轮廓
     max_countor = sorted(contours, key=cv2.contourArea, reverse=True)[0]
     x, y, w, h = cv2.boundingRect(max_countor)
     if check_offset(std_rect, (x, y, w, h), x_scale, y_scale):
         # 测试通过
-        draw_img = draw_std_rect(frame.copy(), std_rect)
+        draw_img = draw_std_rect(draw_img, std_rect)
         return True, draw_img
     else:
-        draw_img = draw_std_rect(frame.copy(), std_rect)
+        draw_img = draw_std_rect(draw_img, std_rect)
         font = cv2.FONT_HERSHEY_SIMPLEX
         draw_img = cv2.putText(draw_img, 'X', (x, y+h), font, 8, (0, 0, 255), 15)
         return False, draw_img
+
+
+def docheck(img_path, color_list, std_rect_list, scale_list):
+    """
+    同时检测 颜色和位置 是否正确
+    scale_list = [ {x: 100, y: 100} ] 横向精度/纵向精度
+    std_rect_list = [{x:1, y:1, w:10, h:10}] 色块标准位置，左上顶点坐标及矩形长/宽
+
+    @return 各个颜色单独分析是否通过
+    """
+    frame = cv2.imread(img_path)
+    draw_img = frame.copy()
+
+    rslt_dict = dict()
+
+    size = len(color_list)
+    for i in range(size):
+        color_range = colors.get_color_list(color_list[i])
+        std_rect = [std_rect_list[i]["x"], std_rect_list[i]["y"], std_rect_list[i]["w"], std_rect_list[i]["h"]]
+        x_scale, y_scale = scale_list[i]["x"], scale_list[i]["y"]
+        # 对单个颜色进行识别
+        flag, draw_img = color_dectect(frame, color_range, x_scale, y_scale, std_rect, draw_img)
+        if flag:
+            rslt_dict[color_list[i]] = 1
+        else:
+            rslt_dict[color_list[i]] = 0
+    logger.info("%s result: %s" % (img_path, rslt_dict))
+    cv2.imwrite(img_path, draw_img)
+
+    return rslt_dict, draw_img
+
+
+
+
+
+    
+
+

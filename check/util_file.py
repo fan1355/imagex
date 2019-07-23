@@ -1,6 +1,20 @@
 import base64
 import time
 
+def get_file_name(file_name):
+    find_type = False
+    fmt='check-%Y%m%d-%H%M%S'      #定义时间显示格式
+    date_str=time.strftime(fmt,time.localtime())
+    for c in file_name:
+        if c == '.':
+            find_type = True
+    if find_type:
+        type = file_name.split('.')[-1]
+        return date_str + '.' + type
+    else:
+        return date_str
+
+
 def save_pic(base64_str):
     img_dir = "check-img/"
 
