@@ -58,7 +58,7 @@ def position_check(request):
     logger.info("colors: %s" % (color_dict))
     # 处理图片
     file_source = request.FILES.get("picture")
-    file_source.name = util_file.get_file_name(file_source.name)
+    file_source.name, file_type = util_file.get_file_name(file_source.name)
     file_path = "check-img/"+file_source.name
     img_file = open(file_path, 'wb+')
     for chunk in file_source.chunks():  
@@ -71,7 +71,8 @@ def position_check(request):
         rslt, _ = movecheck.docheck(file_path, color_dict)
         # return HttpResponse("%s" % rslt)
         with open(file_path, 'rb') as f:
-            image_str = str(base64.b64encode(f.read()))
+            image_str = "data:image/%s;base64,%s" % (file_type, str(base64.b64encode(f.read()))[2:-1] )
+        # logger.info("%s - %s ...... %s" % (type(image_str), image_str[:20], image_str[-20:]))
         resp = dict()
         resp["info"] = rslt
         resp["img"] = image_str

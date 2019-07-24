@@ -9,10 +9,10 @@ def get_file_name(file_name):
         if c == '.':
             find_type = True
     if find_type:
-        type = file_name.split('.')[-1]
-        return date_str + '.' + type
+        file_type = file_name.split('.')[-1]
+        return date_str + '.' + file_type, file_type
     else:
-        return date_str
+        return date_str, "jpeg"
 
 
 def save_pic(base64_str):
