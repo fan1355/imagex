@@ -26,7 +26,7 @@ def get_info(request):
     logger.info("%s" % (color_dict))
     # 处理图片
     file_source = request.FILES.get("picture")
-    file_source.name = util_file.get_file_name(file_source.name)
+    file_source.name, _ = util_file.get_file_name(file_source.name)
     file_path = "check-img/"+file_source.name
     img_file = open(file_path, 'wb+')
     for chunk in file_source.chunks():  
@@ -52,9 +52,7 @@ def position_check(request):
         param = {}
     # logger.info("%s -- %s -- %s" % (request.method, str(request.GET), param ) )
     color_dict = json.loads(param.get('colors',r"{}"))
-    # color_list = param.get('colors','').split(",")
-    # scale_str = param.get('scale_str','[]')
-    # std_rect_str = param.get('std_rect_str','[]')
+    std_size = json.loads(param.get('size',r"{}"))
     logger.info("colors: %s" % (color_dict))
     # 处理图片
     file_source = request.FILES.get("picture")
@@ -68,7 +66,7 @@ def position_check(request):
     list_size = len(color_dict.keys())
     if file_path and list_size > 0:
         # 根据检测结果，将图像合并
-        rslt, _ = movecheck.docheck(file_path, color_dict)
+        rslt, _ = movecheck.docheck(file_path, std_size, color_dict)
         # return HttpResponse("%s" % rslt)
         with open(file_path, 'rb') as f:
             image_str = "data:image/%s;base64,%s" % (file_type, str(base64.b64encode(f.read()))[2:-1] )

@@ -3,6 +3,7 @@ import math
 import numpy as np
 import logging
 
+from check import preprocessing
 from check import colors
 
 logger = logging.getLogger('cmd')
@@ -81,7 +82,7 @@ def color_dectect(img, color_range, x_scale, y_scale, std_rect, draw_img):
         return False, draw_img
 
 
-def docheck(img_path, color_dict):
+def docheck(img_path, std_size, color_dict):
     """
     同时检测 颜色和位置 是否正确
     ！！！--- 该方法会修改原图 ---！！！
@@ -92,6 +93,7 @@ def docheck(img_path, color_dict):
     @return 各色块分析结果，标注后的图片
     """
     frame = cv2.imread(img_path)
+    frame = preprocessing.resize(frame.copy(), std_size["w"], std_size["h"])
     draw_img = frame.copy()
 
     rslt_dict = dict()
@@ -116,8 +118,13 @@ def get_info(img_path, color_dict):
     收集图片色块位置信息
     @return {"color":{x:1, y:1, w:10, h:10}}
     """
-    info = dict()
+    rslt = dict()
     frame = cv2.imread(img_path)
+    x, y, w, h = preprocessing.cut_background(frame.copy()) 
+    rslt["size"] = {"w": w, "h": h}
+
+    frame = frame[y:y+h, x:x+w]
+    info = dict()
     for color,range_list in color_dict.items():
         color_range = [(np.array(range[0]), np.array(range[1])) for range in range_list]
         logger.info("%s: %s" % (color, color_range))
@@ -131,8 +138,9 @@ def get_info(img_path, color_dict):
         x, y, w, h = cv2.boundingRect(max_countor)
         info[color] = {"x": x, "y": y, "w": w, "h": h}
 
-    logger.info("%s info: %s" % (img_path, info))
-    return info
+    rslt["info"] = info
+    logger.info("%s info: %s" % (img_path, rslt))
+    return rslt
 
 
 
