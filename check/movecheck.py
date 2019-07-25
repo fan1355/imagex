@@ -65,7 +65,7 @@ def color_dectect(img, color_range, x_scale, y_scale, std_rect, draw_img):
     if len(contours) < 1:
         draw_img = draw_std_rect(draw_img, std_rect)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        draw_img = cv2.putText(draw_img, 'X', (std_rect[0], std_rect[1]+std_rect[3]), font, 8, (0, 0, 255), 15)
+        draw_img = cv2.putText(draw_img, 'X', (std_rect[0], std_rect[1]+std_rect[3]), font, 8, (0, 0, 255), 10)
         return False, draw_img
     
     # 取最大色块轮廓，一般应该只有一个轮廓
@@ -80,7 +80,7 @@ def color_dectect(img, color_range, x_scale, y_scale, std_rect, draw_img):
         draw_img = draw_std_rect(draw_img, std_rect)
         # draw_img = cv2.drawContours(draw_img,[max_countor], 0,(0,0,255),5)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        draw_img = cv2.putText(draw_img, 'X', (x, y+h), font, 8, (0, 0, 255), 15)
+        draw_img = cv2.putText(draw_img, 'X', (x, y+h), font, 8, (0, 0, 255), 10)
         return False, draw_img
 
 
