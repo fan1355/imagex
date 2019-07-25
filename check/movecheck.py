@@ -141,12 +141,13 @@ def get_info(img_path, color_dict):
         # 判断目标色块是否存在
         if len(contours) < 1:
             info[color] = None
-        # 取最大色块轮廓，一般应该只有一个轮廓
-        max_countor = sorted(contours, key=cv2.contourArea, reverse=True)[0]
-        x, y, w, h = cv2.boundingRect(max_countor)
-        info[color] = {"x": x, "y": y, "w": w, "h": h}
-        # 绘制色块位置
-        draw_img = draw_std_rect(draw_img, (x, y, w, h))
+        else:
+            # 取最大色块轮廓，一般应该只有一个轮廓
+            max_countor = sorted(contours, key=cv2.contourArea, reverse=True)[0]
+            x, y, w, h = cv2.boundingRect(max_countor)
+            info[color] = {"x": x, "y": y, "w": w, "h": h}
+            # 绘制色块位置
+            draw_img = draw_std_rect(draw_img, (x, y, w, h))
 
     rslt["position"] = info
     logger.info("%s info: %s" % (img_path, rslt))
