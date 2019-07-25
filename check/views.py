@@ -24,19 +24,18 @@ def get_info(request):
 
     color_dict = json.loads(param.get('colors',r"{}"))
     logger.info("%s" % (color_dict))
-    # 处理图片
-    file_source = request.FILES.get("picture")
-    file_source.name, _ = util_file.get_file_name(file_source.name)
-    file_path = "check-img/"+file_source.name
-    img_file = open(file_path, 'wb+')
-    for chunk in file_source.chunks():  
-        img_file.write(chunk)  
-    img_file.close()
-    # 分析图片信息
+    # 保存图片
+    file_path, _, file_type = util_file.save_file_from_source(request.FILES.get("picture"))
+    # 分析图片信息，生成返回图像
     list_size = len(color_dict.keys())
     if file_path and list_size > 0:
-        info = movecheck.get_info(file_path, color_dict)
-        return HttpResponse(json.dumps(info),content_type="application/json")
+        info, _ = movecheck.get_info(file_path, color_dict)
+        with open(file_path, 'rb') as f:
+            image_str = "data:image/%s;base64,%s" % (file_type, str(base64.b64encode(f.read()))[2:-1] )
+        resp = dict()
+        resp["info"] = info
+        resp["img"] = image_str
+        return HttpResponse(json.dumps(resp),content_type="application/json")
     else:
         return HttpResponse("ERR.")
 
@@ -54,15 +53,9 @@ def position_check(request):
     color_dict = json.loads(param.get('colors',r"{}"))
     std_size = json.loads(param.get('size',r"{}"))
     logger.info("colors: %s" % (color_dict))
-    # 处理图片
-    file_source = request.FILES.get("picture")
-    file_source.name, file_type = util_file.get_file_name(file_source.name)
-    file_path = "check-img/"+file_source.name
-    img_file = open(file_path, 'wb+')
-    for chunk in file_source.chunks():  
-        img_file.write(chunk)  
-    img_file.close()  
-
+    # 保存图片
+    file_path, _, file_type = util_file.save_file_from_source(request.FILES.get("picture"))
+    # 生成返回图像
     list_size = len(color_dict.keys())
     if file_path and list_size > 0:
         # 根据检测结果，将图像合并

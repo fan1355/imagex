@@ -115,6 +115,7 @@ def docheck(img_path, std_size, color_dict):
         logger.info("end check color: %s" % color)
 
     logger.info("%s result: %s" % (img_path, rslt_dict))
+    # 覆盖原始图像，保存识别后的图像
     cv2.imwrite(img_path, draw_img)
 
     return rslt_dict, draw_img
@@ -130,6 +131,7 @@ def get_info(img_path, color_dict):
     rslt["size"] = {"w": w, "h": h}
 
     frame = frame[y:y+h, x:x+w]
+    draw_img = frame.copy()
     info = dict()
     for color,range_list in color_dict.items():
         color_range = [(np.array(range[0]), np.array(range[1])) for range in range_list]
@@ -143,10 +145,15 @@ def get_info(img_path, color_dict):
         max_countor = sorted(contours, key=cv2.contourArea, reverse=True)[0]
         x, y, w, h = cv2.boundingRect(max_countor)
         info[color] = {"x": x, "y": y, "w": w, "h": h}
+        # 绘制色块位置
+        draw_img = draw_std_rect(draw_img, (x, y, w, h))
 
-    rslt["info"] = info
+    rslt["position"] = info
     logger.info("%s info: %s" % (img_path, rslt))
-    return rslt
+    # 覆盖原始图像，保存识别后的图像
+    cv2.imwrite(img_path, draw_img)
+
+    return rslt, draw_img
 
 
 

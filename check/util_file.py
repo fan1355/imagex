@@ -14,6 +14,19 @@ def get_file_name(file_name):
     else:
         return date_str, "jpeg"
 
+def save_file_from_source(file_source):
+    """
+    @return file_path, file_name, file_type
+    """
+    file_name, file_type = get_file_name(file_source.name)
+    file_path = "check-img/"+file_name
+    img_file = open(file_path, 'wb+')
+    for chunk in file_source.chunks():  
+        img_file.write(chunk)  
+    img_file.close()
+
+    return file_path, file_name, file_type
+
 
 def save_pic(base64_str):
     img_dir = "check-img/"
