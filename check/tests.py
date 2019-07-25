@@ -31,14 +31,14 @@ if __name__ == "__main__":
             # {'x': 356, 'y': 671, 'w': 209, 'h': 211},    # orange 1
         ]
         scale_list = [{'x':0.1, 'y': 0.1}, {'x':0.1, 'y': 0.1}]
-        rslt, draw_img = movecheck.docheck(file_path, color_list, std_rect_list, scale_list)
+        # rslt, draw_img = movecheck.docheck(file_path, color_list, std_rect_list, scale_list)
 
-        show.set_plt(cv2.imread('check-img/cir/4.jpeg'), rows, cols, (i+1), "Correct example")
+        # show.set_plt(cv2.imread('check-img/cir/4.jpeg'), rows, cols, (i+1), "Correct example")
         # show.set_plt(mask, rows, cols, (i*cols+2), "mask")
         # show.set_plt(closed, rows, cols, (i*cols+3), "closed")
         # show.set_plt(cut_img, rows, cols, (i*cols+4), "cut")
-        title = "Correct" if rslt else "Wrong"
-        show.set_plt(draw_img, rows, cols, (i+cols+1), title)
-        print(rslt)
+        # title = "Correct" if rslt else "Wrong"
+        # show.set_plt(draw_img, rows, cols, (i+cols+1), title)
+        # print(rslt)
     
     show.show_plt()

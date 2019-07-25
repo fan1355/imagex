@@ -71,12 +71,14 @@ def color_dectect(img, color_range, x_scale, y_scale, std_rect, draw_img):
     # 取最大色块轮廓，一般应该只有一个轮廓
     max_countor = sorted(contours, key=cv2.contourArea, reverse=True)[0]
     x, y, w, h = cv2.boundingRect(max_countor)
+    logger.info("%s - %s" % (std_rect, [x, y, w, h]))
     if check_offset(std_rect, (x, y, w, h), x_scale, y_scale):
         # 测试通过
         draw_img = draw_std_rect(draw_img, std_rect)
         return True, draw_img
     else:
         draw_img = draw_std_rect(draw_img, std_rect)
+        # draw_img = cv2.drawContours(draw_img,[max_countor], 0,(0,0,255),5)
         font = cv2.FONT_HERSHEY_SIMPLEX
         draw_img = cv2.putText(draw_img, 'X', (x, y+h), font, 8, (0, 0, 255), 15)
         return False, draw_img
@@ -99,6 +101,7 @@ def docheck(img_path, std_size, color_dict):
     rslt_dict = dict()
 
     for color,values in color_dict.items():
+        logger.info("start check color: %s" % color)
         color_range = [(np.array(range[0]), np.array(range[1])) for range in values["ranges"]]
         std_rect = [values["rect"]["x"], values["rect"]["y"], values["rect"]["w"], values["rect"]["h"]]
         x_scale, y_scale = values["scale"]["x"], values["scale"]["y"]
@@ -108,6 +111,9 @@ def docheck(img_path, std_size, color_dict):
             rslt_dict[color] = 1
         else:
             rslt_dict[color] = 0
+        
+        logger.info("end check color: %s" % color)
+
     logger.info("%s result: %s" % (img_path, rslt_dict))
     cv2.imwrite(img_path, draw_img)
 

@@ -9,17 +9,23 @@ def resize(img, w, h):
     img = img[y:y+h, x:x+w]
     return cv2.resize(img,(w,h),interpolation=cv2.INTER_CUBIC)
 
-def cut_background(img):
+def cut_background(img_src):
     """
     @return x, y, w, h
     """
+    img = img_src.copy()
     h, w = img.shape[:2]
+    # 背景填充 进行泛洪填充
+    mask = np.zeros((h+2, w+2), np.uint8)  #掩码长和宽都比输入图像多两个像素点，满水填充不会超出掩码的非零边缘 
+    cv2.floodFill(img, mask, (100,100), (255,255,255), (2,2,2),(3,3,3),8)
+
+    # 背景识别
     mask=np.zeros((img.shape[:2]),np.uint8)
     bgdModel=np.zeros((1,65),np.float64)
     fgdModel=np.zeros((1,65),np.float64)
     rect=(100,100,w,h)
     # 多次计算，保证计算准确度
-    cv2.grabCut(img,mask,rect,bgdModel,fgdModel,3,cv2.GC_INIT_WITH_RECT)
+    cv2.grabCut(img,mask,rect,bgdModel,fgdModel,1,cv2.GC_INIT_WITH_RECT)
     #关于where函数第一个参数是条件，满足条件的话赋值为0，否则是1。如果只有第一个参数的话返回满足条件元素的坐标。
     mask2=np.where((mask==2)|(mask==0),0,1).astype('uint8')
 
