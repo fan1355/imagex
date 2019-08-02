@@ -35,8 +35,11 @@ def get_info(request):
         resp = dict()
         resp["info"] = info
         resp["img"] = image_str
+
+        logger.info("get info: %s, file: %s" % (info, file_path))
         return HttpResponse(json.dumps(resp),content_type="application/json")
     else:
+        logger.info("get info error")
         return HttpResponse("ERR.")
 
 def position_check(request):
@@ -67,9 +70,13 @@ def position_check(request):
         resp = dict()
         resp["info"] = rslt
         resp["img"] = image_str
+
+        logger.info("position check result: %s, file: %s" % (resp["info"], file_path))
         return HttpResponse(json.dumps(resp),content_type="application/json")
-                
-    return HttpResponse("ERR.")
+    
+    else:
+        logger.info("position check error")
+        return HttpResponse("ERR.")
 
 
 def hsv_check(request):
@@ -99,6 +106,34 @@ def hsv_check(request):
             cf = hsvcheck.docheck(file_path, color, measure)
             rslt[color] = cf
         
+        logger.info("hsv check result: %s" % json.dumps(rslt))
         return HttpResponse("%s" % rslt)
-                
-    return HttpResponse("ERR.")
+
+    else:
+        logger.info("hsv check error")
+        return HttpResponse("ERR.")
+
+def show_pic(request):
+    """
+    展示输入图片用
+    """
+    if request.method=='POST':
+        param = request.POST
+    elif request.method=='GET':
+        param = request.GET
+    else:
+        param = {}
+    
+    file_name = param.get('name','not found')
+    logger.info("show picture: %s" % (file_name))
+    try:
+        imagepath = "check-img/{}".format(file_name)  # 图片路径
+        with open(imagepath, 'rb') as f:
+            image_data = f.read()
+        return HttpResponse(image_data, content_type="image/jpeg")
+    except Exception as e:
+        print(e)
+        return HttpResponse(str(e))
+
+
+

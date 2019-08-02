@@ -156,18 +156,18 @@ LOGGING = {
             'formatter': 'default'     # 制定输出的格式，注意 在上面的formatters配置里面选择一个，否则会报错
         },
 
-        # 'stu_handlers': {
-        #     'level': 'DEBUG',
-        #     # 指定日志文件大小，若超过指定的文件大小，会再生成一个新的日志文件保存日志信息
-        #     'class': 'logging.handlers.RotatingFileHandler',
-        #     # 指定文件大小
-        #     # 1M=1024kb 1kb=1024b
-        #     'maxBytes': 5 * 1024 * 1024,
-        #     # 文件地址
-        #     'filename': '%s/log.txt' % LOG_PATH,
-        #     # 指定保存格式
-        #     'formatter': 'default'
-        # },
+        'stu_handlers': {
+            'level': 'DEBUG',
+            # 指定日志文件大小，若超过指定的文件大小，会再生成一个新的日志文件保存日志信息
+            'class': 'logging.handlers.RotatingFileHandler',
+            # 指定文件大小
+            # 1M=1024kb 1kb=1024b
+            'maxBytes': 5 * 1024 * 1024,
+            # 文件地址
+            'filename': '%s/log.txt' % LOG_PATH,
+            # 指定保存格式
+            'formatter': 'default'
+        },
         # 'uauth_handlers': {
         #     'level': 'DEBUG',
         #     # 若日志超过指定文件的大小，会再生成一个新的日志文件保存日志信息
@@ -183,7 +183,7 @@ LOGGING = {
     },
     'loggers': {
         'cmd': {
-            'handlers': ['console'],
+            'handlers': ['console', 'stu_handlers'],
             'level': 'DEBUG',
             'propagate': True,
         },
