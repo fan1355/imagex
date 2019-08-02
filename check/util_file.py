@@ -12,7 +12,7 @@ def get_file_name(file_name):
         file_type = file_name.split('.')[-1]
         return date_str + '.' + file_type, file_type
     else:
-        return date_str, "jpeg"
+        return date_str + '.jpeg', "jpeg"
 
 def save_file_from_source(file_source):
     """
