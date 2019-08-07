@@ -19,6 +19,9 @@ def cut_background(img_src):
     mask = np.zeros((h+2, w+2), np.uint8)  #掩码长和宽都比输入图像多两个像素点，满水填充不会超出掩码的非零边缘 
     cv2.floodFill(img, mask, (5,5), (255,255,255), (3,3,3),(5,5,5),8)
 
+    # 去噪
+    img = cv2.fastNlMeansDenoisingColored(img,None,20,20,7,21)
+
     # 背景识别
     mask=np.zeros((img.shape[:2]),np.uint8)
     bgdModel=np.zeros((1,65),np.float64)
