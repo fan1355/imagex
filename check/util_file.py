@@ -1,5 +1,6 @@
 import base64
 import time
+import json
 
 def get_file_name(file_name):
     find_type = False
@@ -27,6 +28,24 @@ def save_file_from_source(file_source):
 
     return file_path, file_name, file_type
 
+def save_result(imgPath, result):
+    """
+    """
+    file_path = "check-img/result.dat"
+    load_dict = load_result()
+    key = imgPath[imgPath.index("/")+1:]
+    load_dict[key] = result
+    with open(file_path, "w") as dump_f:
+        json.dump(load_dict,dump_f)
+
+def load_result():
+    file_path = "check-img/result.dat"
+    try:
+        with open(file_path, 'r') as load_f:
+            load_dict = json.load(load_f)
+    except IOError:
+        load_dict = dict()
+    return load_dict
 
 def save_pic(base64_str):
     img_dir = "check-img/"

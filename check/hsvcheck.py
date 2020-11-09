@@ -32,7 +32,7 @@ def find_area(img, range_list):
     # print(len(contours))
     cv2.drawContours(img,contours,-1,(0,0,255),3)
     area_measure = areaCal(contours)
-    return mask, area_measure
+    return img, area_measure
 
 def docheck(img_path, color, std_area_measure):
     """

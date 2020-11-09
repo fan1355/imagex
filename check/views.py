@@ -8,6 +8,7 @@ import base64
 from check import movecheck
 from check import hsvcheck
 from check import util_file
+from check import multihsvcheck
 
 logger = logging.getLogger('cmd') # 这里用__name__通用,自动检测.
 
@@ -78,10 +79,33 @@ def position_check(request):
         logger.info("position check error")
         return HttpResponse("ERR.")
 
+def multi_hsv_check(request):
+    """
+    多个色块检测（颜色外部传入）
+    """
+    if request.method=='POST':
+        param = request.POST
+    elif request.method=='GET':
+        param = request.GET
+    else:
+        param = {}
+    # print("%s -- %s -- %s" % (request.method, str(request.GET), param ) )
+    base64_str = param.get('img','not found')
+    color_dict = json.loads(param.get('colors',''))
+    print("%s -- %s -- %s" % (request.method, base64_str[0:100], color_dict))
+    # print("%s -- %s -- %s" % (request.method, str(request.GET), color_dict ) )
+    logger.info(color_dict)
+    
+    file_path = util_file.save_pic(base64_str)
+    check_result = multihsvcheck.docheck(file_path, color_dict)
+
+    logger.info("hsv check result: %s" % json.dumps(check_result))
+    return HttpResponse("{'': 'ok', 'file_path':'%s', 'result':'%s'}" % (file_path, check_result))
+
 
 def hsv_check(request):
     """
-    只检测色块是否存在
+    只检测色块是否存在（颜色已预置）
     """
     # logger.info("%s -- %s -- %s" % (request.method, str(request.GET), str(request.POST) ) )
     if request.method=='POST':

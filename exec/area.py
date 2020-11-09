@@ -6,6 +6,8 @@ from check import movecheck
 from check import util
 from check import extractcolor
 from check.util_show import PicWin
+from check import multihsvcheck
+
 import numpy as np
 import logging
 from cv2 import cv2
@@ -40,12 +42,7 @@ color_dict = {
 
     }
 
-if __name__ == "__main__":
-    # "/Users/fan/python-workspace/imagex/check-img/check-20190725-014637.jpeg"
-    # rslt, img_frame = extractcolor.get_info("/Users/fan/python-workspace/imagex/check-img/check-20190724-151705.jpeg", color_dict)
-    # win = PicWin(1, 2)
-    # win.add(img_frame, "get_info")
-    # win.show()
+def avg_color():
     img = cv2.imread("/Users/fan/python-workspace/imagex/check-img/check-20190724-151705.jpeg")
     x, y, w, h = 260, 1390, 600, 40
     img_cut = img[y:y+h, x:x+w]
@@ -74,3 +71,45 @@ if __name__ == "__main__":
     win.add(img, "img")
     win.add(img_cut, "cut")
     win.show()
+
+
+if __name__ == "__main__":
+    # "/Users/fan/python-workspace/imagex/check-img/check-20190724-151705.jpeg"
+    # rslt, img_frame = extractcolor.get_info("/Users/fan/python-workspace/imagex/check-img/check-20190724-151705.jpeg", color_dict)
+    # win = PicWin(1, 2)
+    # win.add(img_frame, "get_info")
+    # win.show()
+    measure_dict = {
+            "red":{
+                "area":[309, 298, 307, 89],
+                "range":[ [[100, 141,   0], [180, 255, 255]] ],
+                "std_measure": 23635.5
+            },
+            "light-green": {
+                "area":[227, 1357, 701, 103],
+                "range":[ [[ 25,  92, 182], [ 39, 134, 247]] ],
+                "std_measure": 54932.0
+            }
+        }
+    # multihsvcheck.docheck("/Users/fan/python-workspace/imagex/check-img/check-20190725-014637.jpeg", measure_dict)
+    # img_path = "/Users/fan/python-workspace/imagex/check-img/check-20190724-151705.jpeg"
+    img_path = "/Users/fan/python-workspace/imagex/check-img/check-20190725-023648.jpeg"
+    img = cv2.imread(img_path)
+    measures = []
+    check_result = dict()
+    for color, value in measure_dict.items():
+        # 获取参数
+        x, y, w, h = value["area"][0], value["area"][1], value["area"][2], value["area"][3]
+        color_range = [(np.array(range[0]), np.array(range[1])) for range in value["range"]]
+        std_measure = value["std_measure"]
+
+        # logger.info((x, y, w, h))
+
+        # img_cut = img[y:y+h, x:x+w]
+        # logger.info(img_cut)
+        _, area_measure = hsvcheck.find_area(img, color_range)
+        measures.append(area_measure)
+        check_result[color] = area_measure / std_measure
+    logger.info(measures)
+    logger.info(check_result)
+

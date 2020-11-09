@@ -1,0 +1,61 @@
+<html> 
+<meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+<meta name="format-detection" content="telephone=yes"> 
+<head> 
+ <meta charset="UTF-8"> 
+ <title>上传证件</title> 
+ <style> 
+ body { 
+  margin: 20px 20%; 
+  color:#777; 
+  text-align: center; 
+ } 
+ #result{ 
+  margin-top: 20px; 
+ } 
+ </style> 
+</head> 
+<body> 
+ <h1 class="text-center">上传证件...</h1> 
+ <hr/> 
+ <input type="file"/> 
+ <div id="result" align="center"></div> 
+ <hr/> 
+  
+ <!-- 引入jQuery -->
+ <script type="text/javascript" src="../js/jQuery/jquery-1.9.1.min.js"></script> 
+ <script type="text/javascript" src="../js/LocalResizeIMG.js"></script> 
+  
+ <!-- mobileBUGFix.js 兼容修复移动设备 -->
+ <script src="../js/mobileBUGFix.mini.js" type="text/javascript"></script> 
+ <script type="text/javascript"> 
+ $("input:file").localResizeIMG({ 
+  width: 500, 
+  quality: 0.8, 
+  success: function (result) { 
+  var img = new Image(); 
+  img.src = result.base64; 
+  console.log(result.clearBase64); 
+  //$("body").append(img); 
+  $("#result").empty(); 
+  $("#result").append(img); //呈现图像(拍照結果) 
+  $.ajax({ 
+   url: "upLoadImageServlet", 
+   type: "POST", 
+   data:{formFile:result.clearBase64}, 
+   dataType: "HTML", 
+   timeout: 1000, 
+   error: function(){ 
+   alert("Error loading PHP document"); 
+   }, 
+   success: function(result){ 
+   //alert(result); 
+   //console.log(result); 
+   alert("Uploads success~") 
+   } 
+  }); 
+  } 
+ }); 
+ </script> 
+</body> 
+</html>
