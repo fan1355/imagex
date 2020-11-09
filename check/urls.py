@@ -13,7 +13,11 @@ urlpatterns = [
 
     path('cap', views_cap.cap, name='cap'),
     path('cap2', views_cap.cap2, name='cap2'),
+    path('cap4', views_cap.cap4, name='cap4'),
+    path('cap5', views_cap.cap5, name='cap5'),
+    path('cap6', views_cap.cap6, name='cap6'),
 
     path('list', views_list.checkList, name='list'),
+    path('std', views_list.get_info, name='std'),
 
 ]

@@ -6,7 +6,7 @@ from check import movecheck
 from check import util
 from check import extractcolor
 from check.util_show import PicWin
-from check import multihsvcheck
+from check import multihsvcheck, preprocessing
 
 import numpy as np
 import logging
@@ -85,16 +85,23 @@ if __name__ == "__main__":
                 "range":[ [[100, 141,   0], [180, 255, 255]] ],
                 "std_measure": 23635.5
             },
-            "light-green": {
-                "area":[227, 1357, 701, 103],
-                "range":[ [[ 25,  92, 182], [ 39, 134, 247]] ],
-                "std_measure": 54932.0
+            "orange": {
+                "area": [242, 687, 143, 463],
+                "range": [[[0, 184, 0], [43, 255, 255]]],
+                "std_measure": 60932.5,
             }
         }
     # multihsvcheck.docheck("/Users/fan/python-workspace/imagex/check-img/check-20190725-014637.jpeg", measure_dict)
     # img_path = "/Users/fan/python-workspace/imagex/check-img/check-20190724-151705.jpeg"
-    img_path = "/Users/fan/python-workspace/imagex/check-img/check-20190725-023648.jpeg"
+    win = PicWin(1, 2)
+
+    img_path = "/Users/fan/python-workspace/imagex/check-img/WechatIMG503.jpeg"
     img = cv2.imread(img_path)
+    img = preprocessing.resize(img.copy(), 100, 100)
+    win.add(img, "background")
+
+    img = cv2.imread(img_path)
+    win.add(img, "orgin")
     measures = []
     check_result = dict()
     for color, value in measure_dict.items():
@@ -112,4 +119,6 @@ if __name__ == "__main__":
         check_result[color] = area_measure / std_measure
     logger.info(measures)
     logger.info(check_result)
+
+    win.show()
 

@@ -28,7 +28,7 @@ def cut_background(img_src):
     fgdModel=np.zeros((1,65),np.float64)
     rect=(5,5,w-5,h-5)
     # 多次计算，保证计算准确度
-    cv2.grabCut(img,mask,rect,bgdModel,fgdModel,1,cv2.GC_INIT_WITH_RECT)
+    cv2.grabCut(img,mask,rect,bgdModel,fgdModel,2,cv2.GC_INIT_WITH_RECT)
     #关于where函数第一个参数是条件，满足条件的话赋值为0，否则是1。如果只有第一个参数的话返回满足条件元素的坐标。
     mask2=np.where((mask==2)|(mask==0),0,1).astype('uint8')
 

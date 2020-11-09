@@ -8,7 +8,7 @@ class PicWin():
         self.cols = cols
         self._index = 1
     
-    def add(self, img, title):
+    def add(self, img, title="unknow"):
         plt.subplot(self.rows, self.cols, self._index)
         plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         plt.title(title)

@@ -3,8 +3,12 @@ import os
 import json
 from django.http import HttpResponse
 
-from check import util_file
+from check import util_file, multihsvcheck
 import datetime
+import base64
+import logging
+
+logger = logging.getLogger("cmd")
 
 def checkList(request):
     resp = {"data":[]}
@@ -34,4 +38,34 @@ def checkList(request):
             resp["data"].append(rec)
         break
     return HttpResponse(json.dumps(resp))
+
+
+def get_info(request):
+    """
+    检测标准图的色块位置信息
+    """
+    if request.method=='POST':
+        param = request.POST
+    elif request.method=='GET':
+        param = request.GET
+    else:
+        param = {}
+
+    color_dict = json.loads(param.get('colors',r"{}"))
+    logger.info("%s" % (color_dict))
+    base64_str = param.get('img','not found')
+    # 保存图片
+    file_path = util_file.save_pic(base64_str)
+    # 分析图片信息，生成返回图像
+    list_size = len(color_dict.keys())
+    if file_path and list_size > 0:
+        rslt, _ = multihsvcheck.get_info(file_path, color_dict)
+        resp = dict()
+        resp["info"] = rslt
+
+        logger.info("get info: %s, file: %s" % (rslt, file_path))
+        return HttpResponse(json.dumps(resp),content_type="application/json")
+    else:
+        logger.info("get info error")
+        return HttpResponse("ERR.")
 
