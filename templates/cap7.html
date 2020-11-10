@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>拍照</title>
+</head>
+
+<body>
+    <div>
+        <input type="file" name="picture" accept="image/*;" capture="camera" >
+        <textarea name="colors"></textarea>
+        <button id="capture">拍照</button>
+    </div>
+    <canvas id="canvas" width="360" height="640">
+<script>
+document.querySelector('input[type=file]').onchange = function() {
+    var file = this.files[0];
+    drawOnCanvas(file);
+};
+function drawOnCanvas(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var dataURL = e.target.result,
+        canvas = document.querySelector('canvas'),
+        ctx = canvas.getContext('2d'),
+        img = new Image();
+        img.onload = function() {
+            var square = 320;
+            canvas.width = square;
+            canvas.height = square;
+            var context = canvas.getContext('2d');
+            context.clearRect(0, 0, square, square);
+            var imageWidth;
+            var imageHeight;
+            var offsetX = 0;
+            var offsetY = 0;
+            if (this.width > this.height) {
+                imageWidth = Math.round(square * this.width / this.height);
+                imageHeight = square;
+                offsetX = -Math.round((imageWidth - square) / 2);
+            } else {
+                imageHeight = Math.round(square * this.height / this.width);
+                imageWidth = square;
+                offsetY = -Math.round((imageHeight - square) / 2);
+            }
+            context.drawImage(this, 0, 0, 360, 640);
+            var base64 = canvas.toDataURL('image/jpeg');
+        };
+        img.src = dataURL;
+    };
+    reader.readAsDataURL(file);
+}
+</script>
+</body>
+</html>
