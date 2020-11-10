@@ -21,5 +21,8 @@ def cap7(request):
 def cap_phone(request):
     return render(request, "cap_phone.html")
 
+def cap_phone_std(request):
+    return render(request, "cap_phone_std.html")
+
 def cap_std(request):
     return render(request, "cap_std.html")

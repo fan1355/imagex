@@ -18,6 +18,7 @@ urlpatterns = [
     path('cap6', views_cap.cap6, name='cap6'),
     path('cap7', views_cap.cap7, name='cap7'),
     path('cap_phone', views_cap.cap_phone, name='cap_phone'),
+    path('cap_phone_std', views_cap.cap_phone_std, name='cap_phone_std'),
 
     path('list', views_list.checkList, name='list'),
     path('std', views_list.get_info, name='std'),

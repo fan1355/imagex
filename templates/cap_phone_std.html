@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>拍照</title>
+</head>
+
+<body>
+    <div>
+        <input type="file" name="picture" accept="image/*;" capture="camera" >
+        <textarea name="colors" id="colors"></textarea>
+        <button id="capture">上传</button>
+    </div>
+    <div id="result"></div>
+    <canvas id="canvas" width="360" height="640">
+<script>
+document.querySelector('input[type=file]').onchange = function() {
+    var file = this.files[0];
+    drawOnCanvas(file);
+};
+var canvas = document.querySelector('canvas');
+var result_div = document.getElementById("result");
+
+document.getElementById("capture").addEventListener("click", function () {
+        //绘制画面
+        //context.drawImage(video, 0, 0, 640, 480);
+        //var imgData = canvas.toDataURL(); //将图像转换为base64数据
+        var imgData = canvas.toDataURL("image/jpeg", 0.5); //将图像转换为base64数据
+        var colors = document.getElementById("colors").value;
+        console.log(colors)
+        postData = "img="+encodeURIComponent(imgData)
+                +"&colors="+encodeURIComponent(colors.replace(/[\n\r\t]]+/g,''))
+        ajaxPost("/check/std",postData);
+    });
+function drawOnCanvas(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var dataURL = e.target.result,
+        ctx = canvas.getContext('2d'),
+        img = new Image();
+        img.onload = function() {
+            /*var square = 640;
+            canvas.width = square;
+            canvas.height = square;
+            var context = canvas.getContext('2d');
+            context.clearRect(0, 0, square, square);
+            var imageWidth;
+            var imageHeight;
+            var offsetX = 0;
+            var offsetY = 0;
+            if (this.width > this.height) {
+                imageWidth = Math.round(square * this.width / this.height);
+                imageHeight = square;
+                offsetX = -Math.round((imageWidth - square) / 2);
+            } else {
+                imageHeight = Math.round(square * this.height / this.width);
+                imageWidth = square;
+                offsetY = -Math.round((imageHeight - square) / 2);
+            }
+            context.drawImage(this, offsetX, offsetY, imageWidth, imageHeight);*/
+            maxH = 720;
+            if(this.height > maxH) {
+                this.width *= maxH / this.height;
+                this.height = maxH;
+            }
+
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+        };
+        img.src = dataURL;
+    };
+    reader.readAsDataURL(file);
+}
+function ajaxObject() {
+    var xmlHttp;
+    try {
+        // Firefox, Opera 8.0+, Safari
+        xmlHttp = new XMLHttpRequest();
+        } 
+    catch (e) {
+        // Internet Explorer
+        try {
+                xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (e) {
+            try {
+                xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (e) {
+                alert("您的浏览器不支持AJAX！");
+                return false;
+            }
+        }
+    }
+    return xmlHttp;
+}
+ 
+// ajax post请求：
+function ajaxPost ( url , data , fnSucceed , fnFail , fnLoading ) {
+    var ajax = ajaxObject();
+    ajax.open( "post" , url , true );
+    ajax.setRequestHeader( "Content-Type" , "application/x-www-form-urlencoded" );
+    ajax.onreadystatechange = function () {
+        if( ajax.readyState == 4 ) {
+            if( ajax.status == 200 ) {
+                //function(){
+                    console.log(ajax.responseText);
+                    result_div.innerHTML = ajax.responseText;
+                //};
+            }
+            else {
+                //function(){
+                    console.log("HTTP请求错误！错误码："+ajax.status);
+                //};
+            }
+        }
+        else {
+            console.log("fnLoading");
+        }
+    }
+    ajax.send( data );
+ 
+}
+</script>
+</body>
+</html>

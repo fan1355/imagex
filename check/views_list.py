@@ -50,9 +50,10 @@ def get_info(request):
         param = request.GET
     else:
         param = {}
-
-    color_dict = json.loads(param.get('colors',r"{}"))
-    logger.info("%s" % (color_dict))
+    color_str = param.get('colors',r"{}")
+    logger.info("color_str  type:%s, data: %s" % (type(color_str), color_str))
+    color_dict = json.loads(color_str)
+    logger.info("color_dict  type:%s, data: %s" % (type(color_dict), color_dict))
     # 保存图片
     base64_str = param.get('img','')
     if base64_str != '':
