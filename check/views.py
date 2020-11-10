@@ -105,10 +105,10 @@ def multi_hsv_check(request):
     # print("%s -- %s -- %s" % (request.method, str(request.GET), color_dict ) )
     logger.info(color_dict)
     
-    check_result = multihsvcheck.docheck(file_path, color_dict)
+    check_result, check_detail = multihsvcheck.docheck(file_path, color_dict)
 
-    logger.info("hsv check result: %s" % json.dumps(check_result))
-    return HttpResponse("{'code': 'ok', 'file_path':'%s', 'result':'%s'}" % (file_path, check_result))
+    logger.info("hsv check result: %s, check detail:%s" % (json.dumps(check_result), json.dumps(check_detail)) )
+    return HttpResponse(json.dumps(check_detail),content_type="application/json")
 
 
 def hsv_check(request):

@@ -75,6 +75,7 @@ def docheck(img_path, color_std_area_measure_dict):
         x, y, w, h = value["area"][0], value["area"][1], value["area"][2], value["area"][3]
         color_range = [(np.array(range[0]), np.array(range[1])) for range in value["range"]]
         std_measure = value["std_measure"]
+        check_detail[color] = value
 
         # logger.info((x, y, w, h))
 
@@ -87,6 +88,10 @@ def docheck(img_path, color_std_area_measure_dict):
         else:
             check_result[color] = 0
             result += 1
+        
+        check_detail[color]["check_measure"] = area_measure
+        check_detail[color]["result"] = check_result[color]
+
         #  = area_measure / std_measure
         max_countor = sorted(contours, key=cv2.contourArea, reverse=True)[0]
         cv2.drawContours(img,[max_countor],-1,(0,0,255),3)
