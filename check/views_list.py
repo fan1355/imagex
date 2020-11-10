@@ -15,6 +15,8 @@ def checkList(request):
     result_dict = util_file.load_result()
     print(result_dict)
     for root, dirs, files in os.walk("check-img/"):
+        files.sort()
+        files.reverse()
         for file in files:
             #获取文件所属目录
             print(root)

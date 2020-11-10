@@ -72,7 +72,7 @@ def docheck(img_path, color_std_area_measure_dict):
     result = 0
     for color, value in color_std_area_measure_dict.items():
         # 获取参数
-        x, y, w, h = value["area"][0], value["area"][1], value["area"][2], value["area"][3]
+        x_std, y_std, w_std, h_std = value["area"][0], value["area"][1], value["area"][2], value["area"][3]
         color_range = [(np.array(range[0]), np.array(range[1])) for range in value["range"]]
         std_measure = value["std_measure"]
         check_detail[color] = value
@@ -82,13 +82,26 @@ def docheck(img_path, color_std_area_measure_dict):
         # img_cut = img[y:y+h, x:x+w]
         # logger.info(img_cut)
         _, area_measure, contours = find_area(img, color_range)
+        max_countor = sorted(contours, key=cv2.contourArea, reverse=True)[0]
+        x, y, w, h = cv2.boundingRect(max_countor)
         measures.append(area_measure)
-        if area_measure / std_measure > 0.75:
-            check_result[color] = 1
-        else:
+        if abs(x_std - x) > 100:
             check_result[color] = 0
+        elif abs(y_std - y) > 100:
+            check_result[color] = 0
+        elif abs(w_std - w) > 100:
+            check_result[color] = 0
+        elif abs(h_std - h) > 100:
+            check_result[color] = 0
+        elif area_measure / std_measure < 0.5:
+            check_result[color] = 0
+        else:
+            check_result[color] = 1
+
+        if check_result[color] == 0:
             result += 1
         
+        check_detail[color]["check_area"] = [x, y, w, h]
         check_detail[color]["check_measure"] = area_measure
         check_detail[color]["result"] = check_result[color]
 
