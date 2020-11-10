@@ -8,9 +8,10 @@
 <body>
     <div>
         <input type="file" name="picture" accept="image/*;" capture="camera" >
-        <textarea name="colors" id="colors"></textarea>
+        <!-- <textarea name="colors" id="colors"></textarea> -->
         <button id="capture">上传</button>
     </div>
+    <div id="result"></div>
     <canvas id="canvas" width="360" height="640">
 <script>
 document.querySelector('input[type=file]').onchange = function() {
@@ -18,17 +19,18 @@ document.querySelector('input[type=file]').onchange = function() {
     drawOnCanvas(file);
 };
 var canvas = document.querySelector('canvas');
+var result_div = document.getElementById("result");
 
 document.getElementById("capture").addEventListener("click", function () {
         //绘制画面
         //context.drawImage(video, 0, 0, 640, 480);
         //var imgData = canvas.toDataURL(); //将图像转换为base64数据
         var imgData = canvas.toDataURL("image/jpeg", 0.5); //将图像转换为base64数据
-        var colors = document.getElementById("colors").value;
+        //var colors = document.getElementById("colors").value;
 
-        postData = "img="+encodeURIComponent(imgData) + 
-                "&colors="+encodeURIComponent(JSON.stringify(colors))
-        ajaxPost("/check/multihsv",postData)
+        postData = "img="+encodeURIComponent(imgData);
+                //+"&colors="+encodeURIComponent(JSON.stringify(colors))
+        ajaxPost("/check/multihsv",postData);
     });
 function drawOnCanvas(file) {
     var reader = new FileReader();
@@ -103,6 +105,7 @@ function ajaxPost ( url , data , fnSucceed , fnFail , fnLoading ) {
             if( ajax.status == 200 ) {
                 //function(){
                     console.log(ajax.responseText);
+                    result_div.innerHTML = ajax.responseText;
                 //};
             }
             else {
