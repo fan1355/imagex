@@ -57,7 +57,7 @@ def get_info(request):
     # 保存图片
     base64_str = param.get('img','')
     if base64_str != '':
-        file_path = util_file.save_pic(base64_str)
+        file_path = util_file.save_std_pic(base64_str)
     else:
         file_path = util_file.save_std_file_from_source(request.FILES.get("picture"))
     # 分析图片信息，生成返回图像

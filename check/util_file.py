@@ -90,3 +90,23 @@ def save_pic(base64_str):
         return file_path
     else:
         return None
+
+def save_std_pic(base64_str):
+    img_dir = "check-img/std_pic"
+
+    if base64_str != 'not found':
+        # 去掉字符串开头的 data:image/png;base64,iVBO…… 这些信息
+        base64_image = base64_str[base64_str.find(',')+1:]
+        img_type = base64_str[base64_str.find('/')+1:base64_str.find(';')]
+        # print(img_type)
+        # 解码图片并保存
+        decode_base64 = base64.b64decode(base64_image)
+        # print(decode_base64)
+        file_path = img_dir+'.'+img_type
+        file=open(file_path,'wb')  
+        file.write(decode_base64)  
+        file.close()
+
+        return file_path
+    else:
+        return None
