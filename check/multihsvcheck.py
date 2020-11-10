@@ -29,7 +29,8 @@ def get_info(img_path, color_dict):
         std_measure = util.areaCal(contours)
         # 判断目标色块是否存在
         if len(contours) < 1:
-            info[color] = None
+            # info[color] = None
+            continue
         else:
             # 取最大色块轮廓，一般应该只有一个轮廓
             max_countor = sorted(contours, key=cv2.contourArea, reverse=True)[0]
@@ -37,7 +38,8 @@ def get_info(img_path, color_dict):
             # info[color] = {"x": x, "y": y, "w": w, "h": h}
             info[color] = {
                 "area": [ x, y, w, h],
-                "measure": std_measure
+                "range": range_list,
+                "std_measure": std_measure
             }
             # 绘制色块位置
             draw_img = util.draw_std_rect(draw_img, (x, y, w, h))
@@ -66,6 +68,7 @@ def docheck(img_path, color_std_area_measure_dict):
 
     measures = []
     check_result = dict()
+    check_detail = dict()
     result = 0
     for color, value in color_std_area_measure_dict.items():
         # 获取参数
@@ -90,7 +93,7 @@ def docheck(img_path, color_std_area_measure_dict):
     # 覆盖原始图像，保存识别后的图像
     cv2.imwrite(img_path, img)
     util_file.save_result(img_path, result)
-    return check_result    
+    return check_result, check_detail
 
 def find_area(img, range_list):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)

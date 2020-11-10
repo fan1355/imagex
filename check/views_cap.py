@@ -15,5 +15,11 @@ def cap5(request):
 def cap6(request):
     return render(request, "cap6.html")
 
+def cap7(request):
+    return render(request, "cap7.html")
+
+def cap_phone(request):
+    return render(request, "cap_phone.html")
+
 def cap_std(request):
     return render(request, "cap_std.html")

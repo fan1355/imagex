@@ -14,12 +14,12 @@ def checkList(request):
     resp = {"data":[]}
     result_dict = util_file.load_result()
     print(result_dict)
-    for root,dirs,files in os.walk("check-img/"):
+    for root, dirs, files in os.walk("check-img/"):
         for file in files:
             #获取文件所属目录
             print(root)
             #获取文件路径
-            print(os.path.join(root,file))
+            print(os.path.join(root, file))
             path = str(file)
             if not path.startswith("check"):
                 continue
@@ -53,16 +53,19 @@ def get_info(request):
 
     color_dict = json.loads(param.get('colors',r"{}"))
     logger.info("%s" % (color_dict))
-    base64_str = param.get('img','not found')
     # 保存图片
-    file_path = util_file.save_pic(base64_str)
+    base64_str = param.get('img','')
+    if base64_str != '':
+        file_path = util_file.save_pic(base64_str)
+    else:
+        file_path = util_file.save_std_file_from_source(request.FILES.get("picture"))
     # 分析图片信息，生成返回图像
     list_size = len(color_dict.keys())
     if file_path and list_size > 0:
         rslt, _ = multihsvcheck.get_info(file_path, color_dict)
         resp = dict()
         resp["info"] = rslt
-
+        util_file.save_json("check-std/colors.json", rslt["position"])
         logger.info("get info: %s, file: %s" % (rslt, file_path))
         return HttpResponse(json.dumps(resp),content_type="application/json")
     else:

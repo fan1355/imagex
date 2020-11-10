@@ -90,17 +90,25 @@ def multi_hsv_check(request):
     else:
         param = {}
     # print("%s -- %s -- %s" % (request.method, str(request.GET), param ) )
-    base64_str = param.get('img','not found')
-    color_dict = json.loads(param.get('colors',''))
+    base64_str = param.get('img','')
+    if base64_str != '':
+        file_path = util_file.save_pic(base64_str)
+    else:
+        file_path, _, _ = util_file.save_file_from_source(request.FILES.get("picture"))
+
+    # color_dict = json.loads(param.get('colors',''))
+    # 读取标准文件
+    color_dict = util_file.load_json("check-std/colors.json")
+    if not len(color_dict.keys()) > 0:
+        return HttpResponse("{'code': 'err','msg':'no std info'")
     print("%s -- %s -- %s" % (request.method, base64_str[0:100], color_dict))
     # print("%s -- %s -- %s" % (request.method, str(request.GET), color_dict ) )
     logger.info(color_dict)
     
-    file_path = util_file.save_pic(base64_str)
     check_result = multihsvcheck.docheck(file_path, color_dict)
 
     logger.info("hsv check result: %s" % json.dumps(check_result))
-    return HttpResponse("{'': 'ok', 'file_path':'%s', 'result':'%s'}" % (file_path, check_result))
+    return HttpResponse("{'code': 'ok', 'file_path':'%s', 'result':'%s'}" % (file_path, check_result))
 
 
 def hsv_check(request):

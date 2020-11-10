@@ -115,6 +115,9 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Django原来设置的上传大小为2.5M
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  #默认设置为50M
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -125,6 +128,10 @@ STATIC_URL = '/static/'
 CHECK_IMG_PATH = os.path.join(BASE_DIR, 'check-img')
 if not os.path.isdir(CHECK_IMG_PATH):
     os.mkdir(CHECK_IMG_PATH)
+
+CHECK_STD_PATH = os.path.join(BASE_DIR, 'check-std')
+if not os.path.isdir(CHECK_STD_PATH):
+    os.mkdir(CHECK_STD_PATH)
 
 # 创建日志的路径
 LOG_PATH = os.path.join(BASE_DIR, 'log')

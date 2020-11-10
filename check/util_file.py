@@ -28,6 +28,28 @@ def save_file_from_source(file_source):
 
     return file_path, file_name, file_type
 
+def save_std_file_from_source(file_source):
+    """
+    @return file_path, file_name, file_type
+    """
+    file_path = "check-img/std_pic.jpeg"
+    with open(file_path, 'wb+') as img_file:
+        for chunk in file_source.chunks():  
+            img_file.write(chunk)
+    return file_path
+
+def load_json(file_path):
+    try:
+        with open(file_path, 'r') as load_f:
+            load_dict = json.load(load_f)
+    except IOError:
+        load_dict = dict()
+    return load_dict
+
+def save_json(file_path, data):
+    with open(file_path, "w") as dump_f:
+        json.dump(data,dump_f)
+
 def save_result(imgPath, result):
     """
     """
